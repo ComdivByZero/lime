@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 THIS=$(readlink -f "$0")
 
@@ -12,29 +12,30 @@ if [ "$1" = / ]; then
 else
     mkdir --parents $HOME/.config/lime &&
     TMP=$(mktemp --directory --tmpdir=$HOME/.config/lime lime_XXXXX) &&
-    mkdir --parents $TMP{/root,$(pwd)}/
-    ln $HOME/{.profile,.bashrc} $TMP$HOME 2>/dev/null ||
-    cp $HOME/{.profile,.bashrc} $TMP$HOME
+    mkdir --parents $TMP/chroot $TMP/work $TMP/root"$(pwd)"
+    THOME=$TMP/root$HOME
+    cp $HOME/.bashrc $HOME/.profile $THOME/
 fi
 
 (echo "$1" | grep -qE '^[0-9]+[MGK]?$') && MEMORY_LIMIT="$1" && shift
 
-COMMAND=("$@")
-CMD="$@"
-
-if [ -n "$CMD" ]; then
+if [ -n "$*" ]; then
     THISDIR=$(dirname "$THIS")
     BACKEND=$(realpath "$THISDIR/../lib/lime_backend.sh")
-    /usr/bin/sudo "$BACKEND" $MEMORY_LIMIT "$TMP" "${COMMAND[@]}"
+    /usr/bin/sudo "$BACKEND" $MEMORY_LIMIT "$TMP" "$@"
+    RET=$?
 
     [ -z "$TMP" ] ||
-    (rm --force $TMP$HOME/{.profile,.bashrc} && rmdir $TMP 2>/dev/null) ||
+    (rm --force $THOME/.profile $THOME/.bashrc && rmdir $TMP 2>/dev/null) ||
     trash $TMP 2>/dev/null ||
     (mkdir --parents $HOME/.cache/lime && mv $TMP $HOME/.cache/lime/ 2>/dev/null) ||
-    echo cant remove $TMP
+    echo can not remove $TMP
 else
     echo "Limited execution of command. Usage:"
     echo "    $0 [ / ] [ memory ] cmd args"
     echo "default memory limit is 1G"
     echo "/ — do not limit access to home by current directory"
+    RET=1
 fi
+
+exit $RET

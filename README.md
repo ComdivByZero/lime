@@ -15,7 +15,7 @@ Restrict maximum memory usage and home directory access.
 
 ## Install
 
-    /usr/bin/sudo apt install cgroup-tools debootstrap
+    /usr/bin/sudo apt install cgroup-tools debootstrap trash-cli
 
     git clone https://github.com/ComdivByZero/lime.git --depth 1 && cd lime &&
     /usr/bin/sudo sh -c 'P=/usr/local; R=/etc/sudoers.d/lime
