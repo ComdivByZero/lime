@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ "$(id -u)" -ne 0 ]; then
-    cd "$1" && shift && "$@"
+    cd "$1" && shift && /usr/bin/sudo -u $SUDO_USER "$@"
     exit $?
 fi
 
