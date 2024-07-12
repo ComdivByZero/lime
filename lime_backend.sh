@@ -27,6 +27,8 @@ cgo() {
         PWD="$(pwd)"
         chown root:root $TMP/root/home
         mount --types overlay overlay --options lowerdir=/,upperdir=$TMP/root,workdir=$TMP/work $TMP/chroot
+        mount --bind $TMP/root/home $TMP/chroot/home
+
         for FS in proc sys dev run; do
             mount --rbind /$FS $TMP/chroot/$FS
         done
