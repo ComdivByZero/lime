@@ -47,7 +47,7 @@ cgo() {
         done
     else
         cgnew
-        cgexec -g memory:$CGROUP /usr/bin/sudo -u $SUDO_USER "$@"
+        cgexec -g memory:$CGROUP /usr/bin/su $SUDO_USER -c "$@"
         RET=$?
         cgdel
     fi
